@@ -27,7 +27,7 @@
     .container {
       max-width: 900px;
       margin: 20px auto;
-      padding: 30px;
+      padding: 20px;
       background-color: rgba(255, 255, 255, 0.95);
       text-align: center;
       border-radius: 16px;
@@ -114,7 +114,6 @@
 
     #grid {
       display: grid;
-      gap: 8px;
       justify-content: center;
       margin: 0 auto 20px;
       position: relative;
@@ -122,31 +121,30 @@
       background: #fafafa;
       box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
       user-select: none;
-      min-height: 360px;
-      width: fit-content;
+      width: 100%;
       max-width: 100%;
-      will-change: transform;
+      aspect-ratio: 1/1;
       overflow: hidden;
-      padding: 10px;
+      padding: 5px;
+      box-sizing: border-box;
     }
 
     .cell {
-      width: 90px;
-      height: 90px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 32px;
       background-color: white;
       border: none;
       cursor: pointer;
-      border-radius: 8px;
+      border-radius: 6px;
       user-select: none;
       transition: all 0.1s ease;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
       will-change: transform, background-color;
       padding: 0;
       margin: 0;
+      aspect-ratio: 1/1;
+      font-weight: bold;
     }
 
     .cell.correct {
@@ -337,7 +335,7 @@
     @media (max-width: 768px) {
       .container {
         margin: 10px;
-        padding: 20px;
+        padding: 15px;
         border-radius: 12px;
       }
       
@@ -367,8 +365,6 @@
       }
       
       .cell {
-        width: 60px;
-        height: 60px;
         font-size: 24px;
       }
       
@@ -416,7 +412,7 @@
     
     @media (max-width: 480px) {
       .container {
-        padding: 15px;
+        padding: 12px;
         margin: 8px;
       }
       
@@ -430,8 +426,6 @@
       }
       
       .cell {
-        width: 50px;
-        height: 50px;
         font-size: 20px;
       }
       
@@ -458,19 +452,19 @@
       }
     }
 
-    /* 特别针对7x7网格在小屏幕上的调整 */
-    @media (max-width: 600px) {
+    @media (max-width: 375px) {
       .cell {
-        width: 45px;
-        height: 45px;
         font-size: 18px;
+      }
+      #grid {
+        gap: 3px;
+        padding: 3px;
       }
     }
 
-    @media (max-width: 400px) {
-      .cell {
-        width: 40px;
-        height: 40px;
+    /* 特别针对7x7网格的调整 */
+    @media (max-width: 480px) {
+      #grid[data-size="7"] .cell {
         font-size: 16px;
       }
     }
@@ -639,24 +633,22 @@
 
     function updateGridSize() {
       const size = parseInt(gridSizeSelect.value);
-      let cellSize;
+      gridDiv.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+      gridDiv.style.gridTemplateRows = `repeat(${size}, 1fr)`;
+      gridDiv.setAttribute('data-size', size);
+
+      // 动态计算字体大小
+      const gridWidth = gridDiv.clientWidth;
+      const fontSize = Math.min(Math.floor(gridWidth / size * 0.4), 32);
       
-      if (window.innerWidth <= 400) {
-        cellSize = size === 7 ? 40 : 50;
-      } else if (window.innerWidth <= 600) {
-        cellSize = size === 7 ? 45 : 60;
-      } else if (window.innerWidth <= 768) {
-        cellSize = 60;
-      } else {
-        cellSize = 90;
-      }
-      
-      const gap = window.innerWidth <= 768 ? (size === 7 ? 4 : 6) : 8;
-      const totalSize = size * cellSize + (size - 1) * gap;
-      gridDiv.style.width = totalSize + 'px';
-      gridDiv.style.height = totalSize + 'px';
+      // 更新已存在单元格的样式
+      const cells = gridDiv.querySelectorAll('.cell');
+      cells.forEach(cell => {
+        cell.style.fontSize = `${fontSize}px`;
+      });
     }
 
+    // 初始化网格尺寸
     updateGridSize();
     gridSizeSelect.addEventListener('change', () => {
       updateGridSize();
@@ -795,22 +787,7 @@
 
     goLargeBtn.onclick = function() {
       const size = parseInt(gridSizeSelect.value);
-      let cellSize, gap;
       
-      if (window.innerWidth <= 400) {
-        cellSize = size === 7 ? 40 : 50;
-        gap = 4;
-      } else if (window.innerWidth <= 600) {
-        cellSize = size === 7 ? 45 : 60;
-        gap = 5;
-      } else if (window.innerWidth <= 768) {
-        cellSize = 60;
-        gap = 6;
-      } else {
-        cellSize = 90;
-        gap = 8;
-      }
-
       // 首先隐藏GO按钮
       goLargeBtn.style.display = 'none';
       timeResultDiv.style.display = 'none';
@@ -818,9 +795,6 @@
       // 清空网格（但不重置GO按钮状态）
       const cells = gridDiv.querySelectorAll('.cell');
       cells.forEach(cell => cell.remove());
-
-      gridDiv.style.gridTemplateColumns = `repeat(${size}, ${cellSize}px)`;
-      gridDiv.style.gridTemplateRows = `repeat(${size}, ${cellSize}px)`;
 
       current = 1;
       startTime = Date.now();
@@ -839,6 +813,14 @@
         cell.textContent = num;
         cell.addEventListener('click', handleCellClick);
         gridDiv.appendChild(cell);
+      });
+
+      // 更新字体大小
+      const gridWidth = gridDiv.clientWidth;
+      const fontSize = Math.min(Math.floor(gridWidth / size * 0.4), 32);
+      const cellsNew = gridDiv.querySelectorAll('.cell');
+      cellsNew.forEach(cell => {
+        cell.style.fontSize = `${fontSize}px`;
       });
 
       playTone('click');
