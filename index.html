@@ -124,7 +124,9 @@
       user-select: none;
       min-height: 360px;
       width: fit-content;
+      max-width: 100%;
       will-change: transform;
+      overflow: hidden;
     }
 
     .cell {
@@ -228,7 +230,7 @@
       white-space: nowrap;
       text-align: center;
       width: fit-content;
-      max-width: 100%;
+      max-width: 90%;
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
@@ -261,6 +263,7 @@
       flex-wrap: wrap;
       justify-content: center;
       gap: 10px;
+      align-items: center;
     }
 
     #heroSettings select,
@@ -272,6 +275,7 @@
       cursor: pointer;
       transition: all var(--animation-duration) ease;
       min-width: 120px;
+      margin: 5px 0;
     }
 
     #heroSettings select:focus,
@@ -292,6 +296,7 @@
       transition: all var(--animation-duration) ease;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       min-width: 150px;
+      margin: 5px 0;
     }
 
     #heroSettings button:hover {
@@ -311,6 +316,7 @@
       border-radius: 12px;
       display: inline-block;
       max-width: 90%;
+      word-break: break-word;
     }
 
     /* 移动端响应式样式 */
@@ -354,6 +360,7 @@
       
       #grid {
         gap: 5px;
+        min-height: 300px;
       }
       
       #goLargeBtn {
@@ -437,6 +444,33 @@
       #timeResult {
         font-size: 2rem;
         padding: 15px 25px;
+      }
+    }
+
+    /* 特别针对7x7网格在小屏幕上的调整 */
+    @media (max-width: 600px) {
+      .cell {
+        width: 40px;
+        height: 40px;
+        line-height: 40px;
+        font-size: 16px;
+      }
+      
+      #grid {
+        gap: 4px;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .cell {
+        width: 35px;
+        height: 35px;
+        line-height: 35px;
+        font-size: 14px;
+      }
+      
+      #grid {
+        gap: 3px;
       }
     }
   </style>
@@ -600,8 +634,19 @@
 
     function updateGridSize() {
       const size = parseInt(gridSizeSelect.value);
-      const cellSize = window.innerWidth <= 768 ? (window.innerWidth <= 480 ? 50 : 60) : 90;
-      const gap = window.innerWidth <= 768 ? 5 : 8;
+      let cellSize;
+      
+      if (window.innerWidth <= 400) {
+        cellSize = size === 7 ? 35 : 50;
+      } else if (window.innerWidth <= 600) {
+        cellSize = size === 7 ? 40 : 60;
+      } else if (window.innerWidth <= 768) {
+        cellSize = 60;
+      } else {
+        cellSize = 90;
+      }
+      
+      const gap = window.innerWidth <= 768 ? (size === 7 ? 3 : 5) : 8;
       const totalSize = size * cellSize + (size - 1) * gap;
       gridDiv.style.width = totalSize + 'px';
       gridDiv.style.height = totalSize + 'px';
@@ -745,8 +790,21 @@
 
     goLargeBtn.onclick = function() {
       const size = parseInt(gridSizeSelect.value);
-      const cellSize = window.innerWidth <= 768 ? (window.innerWidth <= 480 ? 50 : 60) : 90;
-      const gap = window.innerWidth <= 768 ? 5 : 8;
+      let cellSize, gap;
+      
+      if (window.innerWidth <= 400) {
+        cellSize = size === 7 ? 35 : 50;
+        gap = 3;
+      } else if (window.innerWidth <= 600) {
+        cellSize = size === 7 ? 40 : 60;
+        gap = 4;
+      } else if (window.innerWidth <= 768) {
+        cellSize = 60;
+        gap = 5;
+      } else {
+        cellSize = 90;
+        gap = 8;
+      }
 
       // 首先隐藏GO按钮
       goLargeBtn.style.display = 'none';
@@ -866,7 +924,7 @@
       }
 
       lastDraw = result;
-      playTone('click');
+      playTone('correct'); // 改为与正确点击相同的音效
 
       document.getElementById('heroResult').innerHTML =
         '抽取结果：' + result.map((h) => `<strong>${h}</strong>`).join('，');
