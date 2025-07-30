@@ -132,7 +132,9 @@
     .cell {
       width: 90px;
       height: 90px;
-      line-height: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 32px;
       background-color: white;
       border: none;
@@ -142,6 +144,7 @@
       transition: all 0.1s ease;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       will-change: transform, background-color;
+      padding: 0; /* 确保没有内边距 */
     }
 
     .cell.correct {
@@ -269,13 +272,20 @@
     #heroSettings select,
     #heroSettings input {
       font-size: 1rem;
-      padding: 8px 16px;
+      padding: 8px 12px;
       border-radius: 8px;
       border: 1px solid #ccc;
       cursor: pointer;
       transition: all var(--animation-duration) ease;
-      min-width: 120px;
+      min-width: 100px;
+      max-width: 100px; /* 限制输入框宽度 */
+      box-sizing: border-box;
       margin: 5px 0;
+    }
+
+    #heroSettings input {
+      width: 80px; /* 固定宽度 */
+      text-align: center;
     }
 
     #heroSettings select:focus,
@@ -353,7 +363,6 @@
       .cell {
         width: 60px;
         height: 60px;
-        line-height: 60px;
         font-size: 24px;
         border-radius: 6px;
       }
@@ -408,7 +417,6 @@
       .cell {
         width: 50px;
         height: 50px;
-        line-height: 50px;
         font-size: 20px;
       }
       
@@ -435,6 +443,11 @@
         max-width: none;
       }
       
+      #heroSettings input {
+        width: 100%;
+        max-width: 80px;
+      }
+      
       #goLargeBtn {
         font-size: 2rem;
         min-width: 100px;
@@ -452,7 +465,6 @@
       .cell {
         width: 40px;
         height: 40px;
-        line-height: 40px;
         font-size: 16px;
       }
       
@@ -465,7 +477,6 @@
       .cell {
         width: 35px;
         height: 35px;
-        line-height: 35px;
         font-size: 14px;
       }
       
