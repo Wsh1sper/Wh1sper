@@ -2,61 +2,106 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>舒尔特方格训练 & 特工选择</title>
   <style>
+    :root {
+      --primary-color: #4361ee;
+      --secondary-color: #3a0ca3;
+      --success-color: #4cc9f0;
+      --danger-color: #f72585;
+      --light-color: #f8f9fa;
+      --dark-color: #212529;
+    }
+
     body {
       margin: 0;
-      font-family: 'Microsoft Yahei', sans-serif;
-      background-color: #f2f2f2;
+      font-family: 'Microsoft Yahei', 'PingFang SC', 'Helvetica Neue', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      touch-action: manipulation;
     }
+
     .container {
       max-width: 900px;
-      margin: 30px auto;
+      margin: 20px auto;
       padding: 30px;
-      background-color: #fff;
+      background-color: rgba(255, 255, 255, 0.95);
       text-align: center;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
+
     h1 {
-      color: #222;
-      font-size: 32px;
-      margin-bottom: 20px;
+      color: var(--dark-color);
+      font-size: 2.2rem;
+      margin-bottom: 25px;
+      position: relative;
+      display: inline-block;
     }
+
+    h1:after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 4px;
+      background: var(--primary-color);
+      border-radius: 2px;
+    }
+
     #navBtns {
       margin-bottom: 30px;
     }
+
     #navBtns button {
-      background-color: #2196f3;
+      background-color: var(--primary-color);
       margin: 0 10px;
       color: white;
       border: none;
-      padding: 10px 20px;
-      border-radius: 6px;
+      padding: 12px 24px;
+      border-radius: 8px;
       cursor: pointer;
-      font-size: 18px;
-      user-select: none;
-      transition: background-color 0.3s ease;
+      font-size: 1rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
+
     #navBtns button:hover {
-      background-color: #1e88e5;
+      background-color: var(--secondary-color);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
     }
 
     #settings {
       margin-bottom: 10px;
     }
+
     #settings select {
       font-size: 18px;
-      padding: 6px 12px;
-      border-radius: 6px;
+      padding: 8px 16px;
+      border-radius: 8px;
       border: 1px solid #ccc;
       cursor: pointer;
-      user-select: none;
+      transition: all 0.3s ease;
+    }
+
+    #settings select:focus {
+      border-color: var(--primary-color);
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
     }
 
     #timer {
       display: none;
+      font-size: 1.2rem;
+      color: var(--dark-color);
+      margin-bottom: 15px;
     }
 
     #grid {
@@ -67,10 +112,11 @@
       position: relative;
       border-radius: 12px;
       background: #fafafa;
-      box-shadow: inset 0 0 5px #ddd;
+      box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
       user-select: none;
       min-height: 360px;
       width: fit-content;
+      will-change: transform;
     }
 
     .cell {
@@ -78,19 +124,29 @@
       height: 90px;
       line-height: 90px;
       font-size: 32px;
-      background-color: #f8f8f8;
+      background-color: white;
       border: none;
       cursor: pointer;
-      border-radius: 6px;
+      border-radius: 8px;
       user-select: none;
-      transition: background-color 0.2s ease;
+      transition: background-color 0.1s ease;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      will-change: transform, background-color;
     }
+
     .cell.correct {
       background-color: #b2fab4;
-      cursor: default;
     }
-    .cell:active {
-      background-color: #a0e59b;
+
+    .cell.wrong {
+      background-color: #ffb7b7;
+      animation: shake 0.3s;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-3px); }
+      75% { transform: translateX(3px); }
     }
 
     #goLargeBtn {
@@ -101,12 +157,12 @@
       font-size: 64px;
       font-weight: 700;
       background-color: transparent;
-      color: #4caf50;
+      color: var(--primary-color);
       border: none;
       padding: 0;
       cursor: pointer;
       user-select: none;
-      transition: color 0.3s ease;
+      transition: all 0.3s ease;
       z-index: 10;
       display: flex;
       align-items: center;
@@ -117,28 +173,32 @@
       min-width: 150px;
       min-height: 100px;
     }
+
     #goLargeBtn:hover {
-      color: #388e3c;
-      background-color: transparent;
-      border: none;
-      box-shadow: none;
+      color: var(--secondary-color);
+      transform: translate(-50%, -50%) scale(1.05);
     }
 
     #restartBtn {
-      background-color: #f44336;
+      background-color: var(--danger-color);
       color: white;
       border: none;
-      padding: 10px 24px;
-      font-size: 18px;
-      border-radius: 6px;
+      padding: 12px 28px;
+      font-size: 1rem;
+      font-weight: 500;
+      border-radius: 8px;
       cursor: pointer;
       margin-top: 10px;
       display: none;
       user-select: none;
-      transition: background-color 0.3s ease;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
+
     #restartBtn:hover {
-      background-color: #d32f2f;
+      background-color: #d1145a;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
     }
 
     #timeResult {
@@ -146,35 +206,38 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: 56px;
+      font-size: 3.5rem;
       font-weight: 700;
-      color: #4caf50;
+      color: var(--primary-color);
       user-select: none;
       display: none;
       z-index: 20;
-      background-color: rgba(255, 255, 255, 0.85);
-      padding: 20px 40px;
-      border-radius: 12px;
-      box-shadow: 0 0 10px #4caf50aa;
+      background-color: rgba(255, 255, 255, 0.95);
+      padding: 30px 50px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(67, 97, 238, 0.3);
       pointer-events: none;
       white-space: nowrap;
       text-align: center;
       width: fit-content;
       max-width: 100%;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     #scoreBoard {
-      margin-top: 15px;
-      font-size: 18px;
-      color: #333;
+      margin-top: 25px;
+      font-size: 1rem;
+      color: var(--dark-color);
       min-height: 90px;
-      border-top: 1px solid #ddd;
-      padding-top: 10px;
-      text-align: left;
-      max-width: 400px;
+      border-top: 1px solid rgba(0, 0, 0, 0.1);
+      padding-top: 20px;
+      text-align: center;
+      max-width: 500px;
       margin-left: auto;
       margin-right: auto;
-      user-select: none;
+      background-color: rgba(248, 249, 250, 0.7);
+      border-radius: 12px;
+      padding: 20px;
     }
 
     /* 特工选择模块样式 */
@@ -182,41 +245,146 @@
       display: none;
       text-align: center;
     }
+
     #heroSettings {
       margin-bottom: 20px;
       user-select: none;
     }
+
     #heroSettings select,
-    #heroSettings input,
-    #heroSettings button {
-      font-size: 18px;
+    #heroSettings input {
+      font-size: 1rem;
       padding: 8px 16px;
-      border-radius: 6px;
+      border-radius: 8px;
       border: 1px solid #ccc;
       margin-left: 10px;
       cursor: pointer;
-      user-select: none;
-      transition: border-color 0.3s ease, background-color 0.3s ease;
+      transition: all 0.3s ease;
     }
+
     #heroSettings select:focus,
     #heroSettings input:focus {
-      border-color: #2196f3;
+      border-color: var(--primary-color);
       outline: none;
+      box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
     }
+
     #heroSettings button {
-      background-color: #4caf50;
+      background-color: var(--primary-color);
       color: white;
       border: none;
+      padding: 10px 20px;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-left: 10px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
+
     #heroSettings button:hover {
-      background-color: #45a049;
+      background-color: var(--secondary-color);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
     }
+
     #heroResult {
-      font-size: 20px;
-      color: #555;
+      font-size: 1.3rem;
+      color: var(--dark-color);
       min-height: 28px;
-      margin-top: 10px;
+      margin-top: 20px;
       user-select: none;
+      padding: 15px;
+      background-color: rgba(248, 249, 250, 0.7);
+      border-radius: 12px;
+      display: inline-block;
+    }
+
+    /* 移动端响应式样式 */
+    @media (max-width: 768px) {
+      .container {
+        margin: 10px;
+        padding: 20px;
+        border-radius: 12px;
+      }
+      
+      h1 {
+        font-size: 1.8rem;
+      }
+      
+      #navBtns button {
+        padding: 10px 15px;
+        font-size: 0.9rem;
+        margin: 0 5px;
+      }
+      
+      .cell {
+        width: 60px;
+        height: 60px;
+        line-height: 60px;
+        font-size: 24px;
+      }
+      
+      #grid {
+        gap: 5px;
+      }
+      
+      #goLargeBtn {
+        font-size: 2.5rem;
+        min-width: 120px;
+        min-height: 80px;
+      }
+      
+      #timeResult {
+        font-size: 2.5rem;
+        padding: 20px 30px;
+      }
+      
+      #settings select, #heroSettings select, #heroSettings input {
+        font-size: 1rem;
+        padding: 8px 12px;
+      }
+      
+      #heroResult {
+        font-size: 1.1rem;
+        padding: 10px;
+      }
+      
+      #scoreBoard {
+        padding: 15px;
+        font-size: 0.9rem;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .cell {
+        width: 50px;
+        height: 50px;
+        line-height: 50px;
+        font-size: 20px;
+      }
+      
+      #navBtns {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      
+      #navBtns button {
+        width: 100%;
+        margin: 0;
+      }
+      
+      #heroSettings {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      
+      #heroSettings select, #heroSettings input, #heroSettings button {
+        width: 100%;
+        margin-left: 0;
+      }
     }
   </style>
 </head>
@@ -281,6 +449,7 @@
     let timerInterval;
     let startTime;
     const maxScores = 5;
+    let audioContext; // 用于Web Audio API
 
     // 独立保存不同尺寸成绩
     const scores = {
@@ -301,14 +470,71 @@
     const averageTimeDiv = document.getElementById('averageTime');
     const scoreBoardDiv = document.getElementById('scoreBoard');
 
-    const clickSound = new Audio(
-      'https://actions.google.com/sounds/v1/buttons/button_press_short.ogg'
-    );
+    // 初始化音频上下文
+    function initAudio() {
+      try {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // 在用户首次交互后恢复音频上下文
+        document.addEventListener('click', function initAudioOnClick() {
+          if (audioContext.state === 'suspended') {
+            audioContext.resume();
+          }
+          document.removeEventListener('click', initAudioOnClick);
+        }, { once: true });
+      } catch (e) {
+        console.log('Web Audio API不支持:', e);
+      }
+    }
+
+    // 简单的音效生成器
+    function playTone(type) {
+      if (!audioContext) return;
+      
+      try {
+        const now = audioContext.currentTime;
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        gainNode.gain.value = 0.1; // 音量
+        
+        switch(type) {
+          case 'correct':
+            oscillator.frequency.value = 880; // A5
+            oscillator.type = 'sine';
+            break;
+          case 'wrong':
+            oscillator.frequency.value = 220; // A3
+            oscillator.type = 'square';
+            break;
+          case 'click':
+            oscillator.frequency.value = 440; // A4
+            oscillator.type = 'triangle';
+            break;
+          case 'complete':
+            oscillator.frequency.value = 1046.50; // C6
+            oscillator.type = 'sine';
+            break;
+        }
+        
+        oscillator.start(now);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+        oscillator.stop(now + 0.3);
+      } catch (e) {
+        console.log('音效播放错误:', e);
+      }
+    }
+
+    // 初始化音频
+    initAudio();
 
     function updateGridSize() {
       const size = parseInt(gridSizeSelect.value);
-      const cellSize = 90;
-      const gap = 8;
+      const cellSize = window.innerWidth <= 768 ? (window.innerWidth <= 480 ? 50 : 60) : 90;
+      const gap = window.innerWidth <= 768 ? 5 : 8;
       const totalSize = size * cellSize + (size - 1) * gap;
       gridDiv.style.width = totalSize + 'px';
       gridDiv.style.height = totalSize + 'px';
@@ -320,6 +546,9 @@
       resetToInitial();
       updateScores();
     });
+
+    // 窗口大小改变时更新网格尺寸
+    window.addEventListener('resize', updateGridSize);
 
     function showPage(page) {
       if (timerInterval) clearInterval(timerInterval);
@@ -354,11 +583,9 @@
     function resetToInitial() {
       if (timerInterval) clearInterval(timerInterval);
 
-      [...gridDiv.children].forEach((el) => {
-        if (el !== goLargeBtn && el !== timeResultDiv) {
-          gridDiv.removeChild(el);
-        }
-      });
+      // 清空网格中所有.cell元素
+      const cells = gridDiv.querySelectorAll('.cell');
+      cells.forEach(cell => cell.remove());
 
       goLargeBtn.style.display = 'flex';
       timeResultDiv.style.display = 'none';
@@ -366,95 +593,130 @@
       timerDiv.textContent = '用时：0.0 秒';
       current = 1;
 
-      restartBtn.style.display = 'none'; // 初始状态隐藏重新开始按钮
+      restartBtn.style.display = 'none';
     }
 
     function updateScores() {
       const size = gridSizeSelect.value;
       const currentScores = scores[size] || [];
 
-      scoreList.innerHTML = '';
+      // 使用文档片段提高性能
+      const fragment = document.createDocumentFragment();
+      
       currentScores.forEach((t, i) => {
         const li = document.createElement('li');
-        li.textContent = `第${i + 1}次：${t.toFixed(2)} 秒`;
-        scoreList.appendChild(li);
+        li.textContent = `${i + 1}：${t.toFixed(2)} 秒`;
+        fragment.appendChild(li);
       });
 
+      scoreList.innerHTML = '';
+      scoreList.appendChild(fragment);
+
       if (currentScores.length > 0) {
-        const avg =
-          currentScores.reduce((a, b) => a + b, 0) / currentScores.length;
+        const avg = currentScores.reduce((a, b) => a + b, 0) / currentScores.length;
         averageTimeDiv.textContent = `平均用时：${avg.toFixed(2)} 秒`;
       } else {
         averageTimeDiv.textContent = '';
       }
     }
 
-    goLargeBtn.onclick = () => {
-      const size = parseInt(gridSizeSelect.value);
-      const cellSize = 90;
-      const gap = 8;
+    // 优化后的点击处理函数
+    function handleCellClick(event) {
+      const cell = event.currentTarget;
+      const clickedNum = parseInt(cell.textContent);
+      
+      // 立即反馈点击效果
+      cell.style.transform = 'scale(0.95)';
+      setTimeout(() => {
+        cell.style.transform = '';
+      }, 100);
+      
+      // 先检查数字是否正确
+      if (clickedNum === current) {
+        // 正确的点击
+        cell.classList.add('correct');
+        playTone('correct');
+        
+        current++;
+        
+        const size = parseInt(gridSizeSelect.value);
+        if (current > size * size) {
+          // 完成所有点击
+          clearInterval(timerInterval);
+          const elapsed = (Date.now() - startTime) / 1000;
 
-      goLargeBtn.style.display = 'none';
-      timeResultDiv.style.display = 'none';
+          if (!scores[size]) scores[size] = [];
+          scores[size].push(elapsed);
+          if (scores[size].length > maxScores) scores[size].shift();
 
-      [...gridDiv.children].forEach((el) => {
-        if (el !== goLargeBtn && el !== timeResultDiv) {
-          gridDiv.removeChild(el);
+          updateScores();
+
+          timeResultDiv.textContent = `用时：${elapsed.toFixed(2)} 秒`;
+          timeResultDiv.style.display = 'flex';
+          playTone('complete');
+
+          // 隐藏所有单元格
+          const cells = gridDiv.querySelectorAll('.cell');
+          cells.forEach(c => {
+            c.style.opacity = '0';
+            c.style.pointerEvents = 'none';
+          });
+
+          restartBtn.style.display = 'inline-block';
         }
-      });
+      } else {
+        // 错误的点击
+        cell.classList.add('wrong');
+        playTone('wrong');
+        
+        // 0.3秒后移除错误样式
+        setTimeout(() => {
+          cell.classList.remove('wrong');
+        }, 300);
+      }
+    }
 
-      gridDiv.style.gridTemplateColumns = `repeat(${size}, ${cellSize}px)`;
-      gridDiv.style.gridTemplateRows = `repeat(${size}, ${cellSize}px)`;
+goLargeBtn.onclick = function() {
+  const size = parseInt(gridSizeSelect.value);
+  const cellSize = window.innerWidth <= 768 ? (window.innerWidth <= 480 ? 50 : 60) : 90;
+  const gap = window.innerWidth <= 768 ? 5 : 8;
 
-      current = 1;
-      startTime = Date.now();
+  // 首先隐藏GO按钮
+  goLargeBtn.style.display = 'none';
+  timeResultDiv.style.display = 'none';
 
-      timerDiv.style.display = 'none';
+  // 清空网格（但不重置GO按钮状态）
+  const cells = gridDiv.querySelectorAll('.cell');
+  cells.forEach(cell => cell.remove());
 
-      let numbers = Array.from({ length: size * size }, (_, i) => i + 1);
-      numbers.sort(() => Math.random() - 0.5);
+  gridDiv.style.gridTemplateColumns = `repeat(${size}, ${cellSize}px)`;
+  gridDiv.style.gridTemplateRows = `repeat(${size}, ${cellSize}px)`;
 
-      numbers.forEach((num) => {
-        const cell = document.createElement('div');
-        cell.className = 'cell';
-        cell.textContent = num;
-        cell.onclick = () => {
-          if (parseInt(cell.textContent) === current) {
-            cell.classList.add('correct');
-            clickSound.currentTime = 0;
-            clickSound.play().catch(() => {});
+  current = 1;
+  startTime = Date.now();
 
-            current++;
-            if (current > size * size) {
-              clearInterval(timerInterval);
-              const elapsed = (Date.now() - startTime) / 1000;
+  // 生成随机数字数组
+  let numbers = Array.from({ length: size * size }, (_, i) => i + 1);
+  for (let i = numbers.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [numbers[i], numbers[j]] = [numbers[j], numbers[i]];
+  }
 
-              if (!scores[size]) scores[size] = [];
-              scores[size].push(elapsed);
-              if (scores[size].length > maxScores) scores[size].shift();
+  // 创建单元格
+  numbers.forEach((num) => {
+    const cell = document.createElement('div');
+    cell.className = 'cell';
+    cell.textContent = num;
+    cell.addEventListener('click', handleCellClick);
+    gridDiv.appendChild(cell);
+  });
 
-              updateScores();
+  playTone('click');
+  restartBtn.style.display = 'inline-block';
+};
 
-              timeResultDiv.textContent = `用时：${elapsed.toFixed(2)} 秒`;
-              timeResultDiv.style.display = 'flex';
-
-              [...gridDiv.children].forEach((el) => {
-                if (el !== goLargeBtn && el !== timeResultDiv) {
-                  el.style.display = 'none';
-                }
-              });
-
-              restartBtn.style.display = 'inline-block'; // 完成后显示按钮
-            }
-          }
-        };
-        gridDiv.appendChild(cell);
-      });
-
-      restartBtn.style.display = 'inline-block'; // 训练开始后显示重新开始按钮
-    };
-
-    restartBtn.onclick = () => {
+    restartBtn.onclick = function() {
+      playTone('click');
       resetToInitial();
     };
 
@@ -510,35 +772,34 @@
         return;
       }
 
-      // 最多尝试10次，保证抽取结果与上次无重复
       let result = [];
       let attempts = 0;
       let tempResult = [];
+      
       while (attempts < 10) {
         const copy = [...pool];
         tempResult = [];
+        
         for (let i = 0; i < count; i++) {
           if (copy.length === 0) break;
           const idx = Math.floor(Math.random() * copy.length);
           tempResult.push(copy.splice(idx, 1)[0]);
         }
 
-        // 检查tempResult是否和lastDraw有重复
         const hasOverlap = tempResult.some(name => lastDraw.includes(name));
         if (!hasOverlap) {
           result = tempResult;
           break;
         }
-
         attempts++;
       }
 
-      // 如果尝试多次后仍有重复，则直接用最后一次结果
       if (result.length === 0) {
         result = tempResult;
       }
 
       lastDraw = result;
+      playTone('click');
 
       document.getElementById('heroResult').innerHTML =
         '抽取结果：' + result.map((h) => `<strong>${h}</strong>`).join('，');
@@ -551,4 +812,3 @@
   </script>
 </body>
 </html>
-
