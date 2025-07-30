@@ -127,6 +127,7 @@
       max-width: 100%;
       will-change: transform;
       overflow: hidden;
+      padding: 10px;
     }
 
     .cell {
@@ -144,7 +145,8 @@
       transition: all 0.1s ease;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       will-change: transform, background-color;
-      padding: 0; /* 确保没有内边距 */
+      padding: 0;
+      margin: 0;
     }
 
     .cell.correct {
@@ -265,26 +267,27 @@
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 10px;
+      gap: 15px;
       align-items: center;
     }
 
     #heroSettings select,
     #heroSettings input {
       font-size: 1rem;
-      padding: 8px 12px;
+      padding: 10px 15px;
       border-radius: 8px;
       border: 1px solid #ccc;
       cursor: pointer;
       transition: all var(--animation-duration) ease;
-      min-width: 100px;
-      max-width: 100px; /* 限制输入框宽度 */
+      min-width: 120px;
+      max-width: 100%;
       box-sizing: border-box;
-      margin: 5px 0;
+      margin: 0;
+      height: 44px;
     }
 
     #heroSettings input {
-      width: 80px; /* 固定宽度 */
+      width: 80px;
       text-align: center;
     }
 
@@ -299,14 +302,15 @@
       background-color: var(--primary-color);
       color: white;
       border: none;
-      padding: 10px 20px;
+      padding: 12px 24px;
       font-size: 1rem;
       border-radius: 8px;
       cursor: pointer;
       transition: all var(--animation-duration) ease;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       min-width: 150px;
-      margin: 5px 0;
+      margin: 0;
+      height: 44px;
     }
 
     #heroSettings button:hover {
@@ -331,10 +335,6 @@
 
     /* 移动端响应式样式 */
     @media (max-width: 768px) {
-      :root {
-        --animation-duration: 0.2s;
-      }
-      
       .container {
         margin: 10px;
         padding: 20px;
@@ -356,26 +356,24 @@
       }
       
       #navBtns button {
-        padding: 10px 15px;
-        font-size: 0.9rem;
+        padding: 12px 20px;
+        font-size: 1rem;
+        min-width: 140px;
+      }
+      
+      #grid {
+        gap: 6px;
+        padding: 8px;
       }
       
       .cell {
         width: 60px;
         height: 60px;
         font-size: 24px;
-        border-radius: 6px;
-      }
-      
-      #grid {
-        gap: 5px;
-        min-height: 300px;
       }
       
       #goLargeBtn {
-        font-size: 2.5rem;
-        min-width: 120px;
-        min-height: 80px;
+        font-size: 3rem;
       }
       
       #timeResult {
@@ -385,22 +383,34 @@
       
       #settings select, #heroSettings select, #heroSettings input {
         font-size: 1rem;
-        padding: 8px 12px;
+        padding: 10px 12px;
       }
       
       #heroResult {
-        font-size: 1.1rem;
+        font-size: 1.2rem;
         padding: 12px;
       }
       
       #scoreBoard {
         padding: 15px;
-        font-size: 0.9rem;
+        font-size: 0.95rem;
       }
       
       #restartBtn {
-        padding: 10px 20px;
-        font-size: 0.9rem;
+        padding: 12px 24px;
+        font-size: 1rem;
+      }
+      
+      /* 特工选择模块在移动端的优化 */
+      #heroSettings {
+        gap: 10px;
+      }
+      
+      #heroSettings select,
+      #heroSettings input,
+      #heroSettings button {
+        width: 100%;
+        max-width: 280px;
       }
     }
     
@@ -414,74 +424,54 @@
         font-size: 1.6rem;
       }
       
+      #grid {
+        gap: 4px;
+        padding: 6px;
+      }
+      
       .cell {
         width: 50px;
         height: 50px;
         font-size: 20px;
       }
       
-      #navBtns {
-        flex-direction: column;
-        align-items: center;
-      }
-      
-      #navBtns button {
-        width: 100%;
-        max-width: none;
-        margin: 0 0 8px 0;
-      }
-      
-      #heroSettings {
-        flex-direction: column;
-        align-items: center;
-      }
-      
-      #heroSettings select, 
-      #heroSettings input, 
-      #heroSettings button {
-        width: 100%;
-        max-width: none;
-      }
-      
-      #heroSettings input {
-        width: 100%;
-        max-width: 80px;
-      }
-      
       #goLargeBtn {
-        font-size: 2rem;
-        min-width: 100px;
-        min-height: 70px;
+        font-size: 2.5rem;
       }
       
       #timeResult {
         font-size: 2rem;
         padding: 15px 25px;
       }
+      
+      /* 特工选择模块在小屏幕上的优化 */
+      #heroSettings {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      #heroSettings select,
+      #heroSettings input,
+      #heroSettings button {
+        width: 100%;
+        max-width: 280px;
+      }
     }
 
     /* 特别针对7x7网格在小屏幕上的调整 */
     @media (max-width: 600px) {
       .cell {
-        width: 40px;
-        height: 40px;
-        font-size: 16px;
-      }
-      
-      #grid {
-        gap: 4px;
+        width: 45px;
+        height: 45px;
+        font-size: 18px;
       }
     }
 
     @media (max-width: 400px) {
       .cell {
-        width: 35px;
-        height: 35px;
-        font-size: 14px;
-      }
-      
-      #grid {
-        gap: 3px;
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
       }
     }
   </style>
@@ -525,16 +515,20 @@
     <!-- 特工选择模块 -->
     <div id="heroPage">
       <div id="heroSettings">
-        抽取分类：
-        <select id="agentCategory">
-          <option value="all">全部</option>
-          <option value="duel">决斗</option>
-          <option value="pioneer">先锋</option>
-          <option value="sentinel">哨位</option>
-          <option value="controller">控场</option>
-        </select>
-        抽取人数：
-        <input id="heroCount" type="number" value="1" min="1" max="10" />
+        <div>
+          <div style="margin-bottom: 5px; font-weight: 500;">抽取分类：</div>
+          <select id="agentCategory">
+            <option value="all">全部</option>
+            <option value="duel">决斗</option>
+            <option value="pioneer">先锋</option>
+            <option value="sentinel">哨位</option>
+            <option value="controller">控场</option>
+          </select>
+        </div>
+        <div>
+          <div style="margin-bottom: 5px; font-weight: 500;">抽取人数：</div>
+          <input id="heroCount" type="number" value="1" min="1" max="10" />
+        </div>
         <button id="randomAgentBtn">随机特工</button>
       </div>
       <div id="heroResult"></div>
@@ -648,16 +642,16 @@
       let cellSize;
       
       if (window.innerWidth <= 400) {
-        cellSize = size === 7 ? 35 : 50;
+        cellSize = size === 7 ? 40 : 50;
       } else if (window.innerWidth <= 600) {
-        cellSize = size === 7 ? 40 : 60;
+        cellSize = size === 7 ? 45 : 60;
       } else if (window.innerWidth <= 768) {
         cellSize = 60;
       } else {
         cellSize = 90;
       }
       
-      const gap = window.innerWidth <= 768 ? (size === 7 ? 3 : 5) : 8;
+      const gap = window.innerWidth <= 768 ? (size === 7 ? 4 : 6) : 8;
       const totalSize = size * cellSize + (size - 1) * gap;
       gridDiv.style.width = totalSize + 'px';
       gridDiv.style.height = totalSize + 'px';
@@ -804,14 +798,14 @@
       let cellSize, gap;
       
       if (window.innerWidth <= 400) {
-        cellSize = size === 7 ? 35 : 50;
-        gap = 3;
-      } else if (window.innerWidth <= 600) {
-        cellSize = size === 7 ? 40 : 60;
+        cellSize = size === 7 ? 40 : 50;
         gap = 4;
+      } else if (window.innerWidth <= 600) {
+        cellSize = size === 7 ? 45 : 60;
+        gap = 5;
       } else if (window.innerWidth <= 768) {
         cellSize = 60;
-        gap = 5;
+        gap = 6;
       } else {
         cellSize = 90;
         gap = 8;
